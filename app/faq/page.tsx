@@ -4,17 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import {
-  Search,
-  ChevronDown,
-  ChevronUp,
-  BookOpen,
-  MessageSquare,
-  CreditCard,
-  Settings,
-  Shield,
-  HelpCircle,
-} from "lucide-react"
+import { Search, ChevronDown, ChevronUp, BookOpen, MessageSquare, HelpCircle } from "lucide-react"
 import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { useState } from "react"
@@ -45,20 +35,6 @@ export default function FAQPage() {
             "Yes! Shikkhok AI offers a free plan that includes basic chat functionality, access to fundamental lessons, and practice exercises. Premium features are available with our paid plans.",
           tags: ["pricing", "free", "premium"],
         },
-        {
-          id: "getting-started-3",
-          question: "What age groups is Shikkhok AI suitable for?",
-          answer:
-            "Shikkhok AI is designed for learners of all ages. Our content is primarily structured around grades 9-10 curriculum, but we welcome adult learners and younger students who want to advance their Bengali skills.",
-          tags: ["age", "curriculum", "students"],
-        },
-        {
-          id: "getting-started-4",
-          question: "Do I need any prior knowledge of Bengali to start?",
-          answer:
-            "Not at all! Shikkhok AI is designed for complete beginners as well as advanced learners. Our AI tutor adapts to your current level and provides personalized learning paths.",
-          tags: ["beginner", "level", "prerequisites"],
-        },
       ],
     },
     {
@@ -73,171 +49,6 @@ export default function FAQPage() {
           answer:
             "Our AI tutor uses advanced language models trained specifically for Bengali language education. It can answer questions, provide explanations, correct grammar, and offer personalized learning suggestions based on your progress.",
           tags: ["ai", "tutor", "chat"],
-        },
-        {
-          id: "chat-2",
-          question: "Can I ask questions in English?",
-          answer:
-            "Yes! You can ask questions in both English and Bengali. Our AI tutor is multilingual and will respond in the language that best helps your learning, often mixing both languages for clarity.",
-          tags: ["language", "english", "multilingual"],
-        },
-        {
-          id: "chat-3",
-          question: "Is there a limit to how many questions I can ask?",
-          answer:
-            "Free users can ask up to 50 questions per day. Premium subscribers have unlimited chat access. The AI is available 24/7 to help with your learning.",
-          tags: ["limits", "questions", "premium"],
-        },
-        {
-          id: "chat-4",
-          question: "Can the AI help with pronunciation?",
-          answer:
-            "Our AI can provide pronunciation guides, phonetic breakdowns, and audio examples. Premium users also get access to voice recognition for pronunciation practice.",
-          tags: ["pronunciation", "audio", "voice"],
-        },
-      ],
-    },
-    {
-      id: "lessons-practice",
-      title: "Lessons & Practice",
-      icon: BookOpen,
-      color: "bg-purple-100 text-purple-600",
-      faqs: [
-        {
-          id: "lessons-1",
-          question: "How are the lessons structured?",
-          answer:
-            "Lessons are organized by topics like Grammar, Literature, Composition, and Poetry. Each lesson includes explanations, examples, practice exercises, and quizzes to test your understanding.",
-          tags: ["structure", "curriculum", "topics"],
-        },
-        {
-          id: "lessons-2",
-          question: "Can I skip lessons or learn out of order?",
-          answer:
-            "While we recommend following the structured path, you can access any unlocked lesson. Some advanced lessons may require completing prerequisites to ensure you have the necessary foundation.",
-          tags: ["order", "prerequisites", "flexibility"],
-        },
-        {
-          id: "lessons-3",
-          question: "How do the practice tests work?",
-          answer:
-            "Practice tests include multiple-choice questions, fill-in-the-blanks, and essay questions. You get immediate feedback, explanations for correct answers, and suggestions for improvement.",
-          tags: ["tests", "practice", "feedback"],
-        },
-        {
-          id: "lessons-4",
-          question: "Can I download lessons for offline study?",
-          answer:
-            "Premium users can download lessons and audio content for offline access. This is perfect for studying without an internet connection.",
-          tags: ["offline", "download", "premium"],
-        },
-      ],
-    },
-    {
-      id: "account-billing",
-      title: "Account & Billing",
-      icon: CreditCard,
-      color: "bg-orange-100 text-orange-600",
-      faqs: [
-        {
-          id: "billing-1",
-          question: "What payment methods do you accept?",
-          answer:
-            "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and local payment methods including bKash and Nagad for Bangladeshi users.",
-          tags: ["payment", "billing", "methods"],
-        },
-        {
-          id: "billing-2",
-          question: "Can I cancel my subscription anytime?",
-          answer:
-            "Yes, you can cancel your subscription at any time from your account settings. You'll continue to have access to premium features until the end of your current billing period.",
-          tags: ["cancel", "subscription", "billing"],
-        },
-        {
-          id: "billing-3",
-          question: "Do you offer refunds?",
-          answer:
-            "We offer a 30-day money-back guarantee for new subscribers. If you're not satisfied within the first 30 days, contact our support team for a full refund.",
-          tags: ["refund", "guarantee", "money-back"],
-        },
-        {
-          id: "billing-4",
-          question: "Can I change my subscription plan?",
-          answer:
-            "Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately for upgrades, or at the next billing cycle for downgrades.",
-          tags: ["change", "upgrade", "downgrade"],
-        },
-      ],
-    },
-    {
-      id: "technical",
-      title: "Technical Support",
-      icon: Settings,
-      color: "bg-red-100 text-red-600",
-      faqs: [
-        {
-          id: "tech-1",
-          question: "What devices and browsers are supported?",
-          answer:
-            "Shikkhok AI works on all modern browsers (Chrome, Firefox, Safari, Edge) and is optimized for both desktop and mobile devices. We also have mobile apps for iOS and Android.",
-          tags: ["devices", "browsers", "compatibility"],
-        },
-        {
-          id: "tech-2",
-          question: "Why is the AI responding slowly?",
-          answer:
-            "Response times can vary based on server load and your internet connection. If you're experiencing consistent delays, try refreshing the page or check your internet connection. Contact support if issues persist.",
-          tags: ["slow", "performance", "connection"],
-        },
-        {
-          id: "tech-3",
-          question: "I'm having trouble with audio playback",
-          answer:
-            "Ensure your browser allows audio playback and check your device's volume settings. Try using headphones if you're in a noisy environment. Clear your browser cache if problems continue.",
-          tags: ["audio", "playback", "sound"],
-        },
-        {
-          id: "tech-4",
-          question: "How do I reset my password?",
-          answer:
-            "Click 'Forgot Password' on the login page, enter your email address, and follow the instructions in the reset email. If you don't receive the email, check your spam folder.",
-          tags: ["password", "reset", "login"],
-        },
-      ],
-    },
-    {
-      id: "privacy-security",
-      title: "Privacy & Security",
-      icon: Shield,
-      color: "bg-gray-100 text-gray-600",
-      faqs: [
-        {
-          id: "privacy-1",
-          question: "How is my personal data protected?",
-          answer:
-            "We use industry-standard encryption to protect your data. Your personal information is never shared with third parties without your consent. Read our Privacy Policy for detailed information.",
-          tags: ["privacy", "data", "protection"],
-        },
-        {
-          id: "privacy-2",
-          question: "Are my chat conversations private?",
-          answer:
-            "Yes, your conversations with the AI tutor are private and encrypted. We may analyze anonymized data to improve our AI, but your personal conversations remain confidential.",
-          tags: ["chat", "private", "confidential"],
-        },
-        {
-          id: "privacy-3",
-          question: "Can I delete my account and data?",
-          answer:
-            "Yes, you can permanently delete your account and all associated data from your account settings. This action is irreversible, so please make sure you want to proceed.",
-          tags: ["delete", "account", "data"],
-        },
-        {
-          id: "privacy-4",
-          question: "Do you use cookies?",
-          answer:
-            "We use essential cookies for functionality and optional cookies for analytics and personalization. You can manage your cookie preferences in your browser settings.",
-          tags: ["cookies", "tracking", "preferences"],
         },
       ],
     },
@@ -263,13 +74,11 @@ export default function FAQPage() {
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
       <Navbar />
 
-      {/* Hero Section */}
       <section className="pt-20 pb-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h1>
           <p className="text-xl text-gray-600 mb-8">Find quick answers to common questions about Shikkhok AI</p>
 
-          {/* Search */}
           <div className="relative max-w-2xl mx-auto">
             <Search className="absolute left-4 top-4 h-5 w-5 text-gray-400" />
             <Input
@@ -282,7 +91,6 @@ export default function FAQPage() {
         </div>
       </section>
 
-      {/* FAQ Categories */}
       <section className="py-16 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           {!searchTerm && (
@@ -308,7 +116,6 @@ export default function FAQPage() {
             </div>
           )}
 
-          {/* FAQ Items */}
           <div className="space-y-8">
             {filteredFAQs.map((category) => (
               <div key={category.id}>
@@ -363,7 +170,7 @@ export default function FAQPage() {
               <HelpCircle className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No results found</h3>
               <p className="text-gray-600 mb-6">
-                We couldn't find any FAQs matching "{searchTerm}". Try different keywords or browse by category.
+                We could not find any FAQs matching {searchTerm}. Try different keywords or browse by category.
               </p>
               <Button variant="outline" onClick={() => setSearchTerm("")}>
                 Clear Search
@@ -373,12 +180,11 @@ export default function FAQPage() {
         </div>
       </section>
 
-      {/* Still Need Help */}
       <section className="py-16 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Still Need Help?</h2>
           <p className="text-lg text-gray-600 mb-8">
-            Can't find what you're looking for? Our support team is here to help.
+            Cannot find what you are looking for? Our support team is here to help.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -396,7 +202,6 @@ export default function FAQPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">

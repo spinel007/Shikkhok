@@ -46,7 +46,6 @@ export default function ProfilePage() {
 
   const handleSave = () => {
     setIsEditing(false)
-    // Here you would typically save to a backend
   }
 
   return (
@@ -54,16 +53,13 @@ export default function ProfilePage() {
       <DashboardNavbar />
 
       <div className="max-w-7xl mx-auto p-6 pt-24">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Profile</h1>
           <p className="text-gray-600">Your personal information and learning progress</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Profile Info */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Basic Info Card */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
@@ -76,7 +72,6 @@ export default function ProfilePage() {
                 </Button>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Profile Picture */}
                 <div className="flex items-center gap-6">
                   <div className="relative">
                     <Avatar className="h-24 w-24 bg-blue-100">
@@ -97,7 +92,6 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Form Fields */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
@@ -180,7 +174,6 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            {/* Learning Goals */}
             <Card>
               <CardHeader>
                 <CardTitle>Learning Goals</CardTitle>
@@ -205,9 +198,7 @@ export default function ProfilePage() {
             </Card>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
-            {/* Stats */}
             <Card>
               <CardHeader>
                 <CardTitle>Statistics</CardTitle>
@@ -216,7 +207,7 @@ export default function ProfilePage() {
                 <div className="space-y-4">
                   {stats.map((stat, index) => (
                     <div key={index} className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg bg-gray-100`}>
+                      <div className="p-2 rounded-lg bg-gray-100">
                         <stat.icon className={`h-5 w-5 ${stat.color}`} />
                       </div>
                       <div className="flex-1">
@@ -229,7 +220,6 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            {/* Recent Achievements */}
             <Card>
               <CardHeader>
                 <CardTitle>Recent Achievements</CardTitle>
@@ -252,7 +242,6 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
             <Card>
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>

@@ -32,7 +32,6 @@ export default function DebugPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    // Auto-test on page load
     testOpenAI()
   }, [])
 
@@ -102,7 +101,6 @@ export default function DebugPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <BookOpen className="h-8 w-8 text-green-600" />
@@ -116,7 +114,6 @@ export default function DebugPage() {
           </div>
         </div>
 
-        {/* Quick Tests */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Quick System Tests</CardTitle>
@@ -135,7 +132,6 @@ export default function DebugPage() {
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
-              {/* OpenAI Test Results */}
               <Alert variant={openaiTest.status === "error" ? "destructive" : "default"}>
                 {openaiTest.status === "success" ? (
                   <CheckCircle className="h-4 w-4" />
@@ -168,7 +164,6 @@ export default function DebugPage() {
                 </AlertDescription>
               </Alert>
 
-              {/* Chat Test Results */}
               <Alert variant={chatTest.status === "error" ? "destructive" : "default"}>
                 {chatTest.status === "success" ? (
                   <CheckCircle className="h-4 w-4" />
@@ -204,7 +199,6 @@ export default function DebugPage() {
           </CardContent>
         </Card>
 
-        {/* Troubleshooting Guide */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -214,7 +208,6 @@ export default function DebugPage() {
             <CardDescription>Common issues and solutions</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Environment Variables */}
             <div>
               <h3 className="font-semibold mb-3 flex items-center gap-2">
                 <Settings className="h-4 w-4" />
@@ -243,12 +236,11 @@ export default function DebugPage() {
 
             <Separator />
 
-            {/* Common Issues */}
             <div>
               <h3 className="font-semibold mb-3">Common Issues & Solutions</h3>
               <div className="space-y-4">
                 <div className="border-l-4 border-red-500 pl-4">
-                  <h4 className="font-medium text-red-700">❌ "Environment variables not found"</h4>
+                  <h4 className="font-medium text-red-700">❌ Environment variables not found</h4>
                   <ul className="text-sm text-gray-600 mt-1 space-y-1">
                     <li>• Go to Vercel Dashboard → Your Project → Settings → Environment Variables</li>
                     <li>• Add OPENAI_API_KEY and ASSISTANT_ID</li>
@@ -257,19 +249,19 @@ export default function DebugPage() {
                 </div>
 
                 <div className="border-l-4 border-orange-500 pl-4">
-                  <h4 className="font-medium text-orange-700">⚠️ "Invalid API key format"</h4>
+                  <h4 className="font-medium text-orange-700">⚠️ Invalid API key format</h4>
                   <ul className="text-sm text-gray-600 mt-1 space-y-1">
-                    <li>• API key should start with "sk-proj-" or "sk-"</li>
+                    <li>• API key should start with sk-proj- or sk-</li>
                     <li>• Remove any extra spaces or characters</li>
                     <li>• Generate a new API key if needed</li>
                   </ul>
                 </div>
 
                 <div className="border-l-4 border-blue-500 pl-4">
-                  <h4 className="font-medium text-blue-700">ℹ️ "Assistant not found"</h4>
+                  <h4 className="font-medium text-blue-700">ℹ️ Assistant not found</h4>
                   <ul className="text-sm text-gray-600 mt-1 space-y-1">
                     <li>• Create an Assistant at OpenAI Platform</li>
-                    <li>• Copy the Assistant ID (starts with "asst_")</li>
+                    <li>• Copy the Assistant ID (starts with asst_)</li>
                     <li>• Make sure it exists in your OpenAI account</li>
                   </ul>
                 </div>
@@ -278,7 +270,6 @@ export default function DebugPage() {
           </CardContent>
         </Card>
 
-        {/* Useful Links */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
