@@ -79,7 +79,7 @@ export default function DebugPage() {
         const errorData = await response.json()
         setChatTest({
           status: "error",
-          message: `Chat API failed with status ${response.status}`,
+          message: "Chat API failed with status " + response.status,
           error: errorData.error || "Unknown error",
         })
       }
