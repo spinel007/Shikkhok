@@ -77,6 +77,36 @@ Make sure to set these environment variables in your hosting platform:
 - `OPENAI_API_KEY`
 - `ASSISTANT_ID`
 
+## Local Development
+
+\`\`\`bash
+# Clone the repository
+git clone <repository-url>
+cd shikkhok-ai-platform
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your actual values
+
+# Run the development server
+npm run dev
+
+# Open http://localhost:3000 in your browser
+\`\`\`
+
+## Build for Production
+
+\`\`\`bash
+# Build the application
+npm run build
+
+# Start production server
+npm start
+\`\`\`
+
 ## Features in Detail
 
 ### AI Integration
@@ -104,6 +134,25 @@ Make sure to set these environment variables in your hosting platform:
 - Automatic rendering
 - Bengali + Math integration
 
+## Troubleshooting
+
+### Common Issues
+
+1. **Build fails with pnpm**: This project now uses npm. Make sure to use `npm install` and `npm run build`
+
+2. **Environment variables not found**: 
+   - Check that `.env.local` exists and contains the required variables
+   - For production, set environment variables in your hosting platform
+
+3. **OpenAI API errors**:
+   - Verify your API key is valid
+   - Check that your Assistant ID exists
+   - Visit `/debug` page for diagnostic information
+
+4. **Math rendering issues**:
+   - MathJax loads automatically
+   - Use proper LaTeX syntax: `$inline$` or `$$display$$`
+
 ## Contributing
 
 1. Fork the repository
@@ -114,76 +163,3 @@ Make sure to set these environment variables in your hosting platform:
 ## License
 
 MIT License - see LICENSE file for details
-\`\`\`
-
-Perfect! I've integrated all the requested features into the Shikkhok AI platform:
-
-## 🤖 **OpenAI Assistant Integration**
-
-### **API Route (`/api/ask/route.ts`):**
-- **OpenAI Assistants API** integration with thread management
-- **Error handling** with fallback responses
-- **Timeout protection** (60 seconds max)
-- **Status monitoring** for run completion
-- **Graceful degradation** when OpenAI is unavailable
-
-### **Chat Interface Updates:**
-- **Real-time AI responses** using the OpenAI Assistant
-- **Loading states** with spinner animations
-- **Error handling** with user-friendly messages
-- **Automatic message history** management
-- **Smart chat titles** based on first user message
-
-## 📐 **MathJax Integration**
-
-### **Mathematical Expression Support:**
-- **LaTeX syntax** for inline math: `$x + y = z$`
-- **Display equations**: `$$a^2 + b^2 = c^2$$`
-- **Automatic rendering** when messages update
-- **Bengali + Math** combination support
-- **Responsive math** that works on all devices
-
-### **Configuration:**
-- **Polyfill support** for older browsers
-- **Optimized loading** with Next.js Script component
-- **Custom MathJax config** for Bengali content
-- **Escape sequence processing** for complex expressions
-
-## 🔧 **Environment Setup**
-
-### **Required Environment Variables:**
-\`\`\`bash
-OPENAI_API_KEY=your_openai_api_key_here
-ASSISTANT_ID=your_assistant_id_here
-\`\`\`
-
-### **OpenAI Assistant Setup:**
-1. Create an Assistant on OpenAI Platform
-2. Configure it for Bengali language teaching
-3. Copy the Assistant ID to your environment
-4. Set up your API key
-
-## 🚀 **Enhanced Features**
-
-### **Smart AI Responses:**
-- **Context-aware** Bengali language instruction
-- **Mathematical examples** in responses
-- **Structured explanations** with examples and tips
-- **Voice guidance** indicators
-- **Fallback responses** when API is down
-
-### **Improved UX:**
-- **Loading indicators** during AI processing
-- **Error messages** for failed requests
-- **Auto-scroll** to new messages
-- **Message formatting** with bold text support
-- **Real-time typing** experience
-
-### **Production Ready:**
-- **Timeout handling** for long AI responses
-- **Rate limiting** protection
-- **Error recovery** mechanisms
-- **Scalable architecture** for multiple users
-- **Environment configuration** for deployment
-
-The platform now provides a complete AI-powered Bengali learning experience with mathematical support, making it perfect for students learning Bengali language and literature with integrated mathematical concepts!

@@ -124,13 +124,11 @@ export default function HelpPage() {
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
       <Navbar />
 
-      {/* Hero Section */}
       <section className="pt-20 pb-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Help Center</h1>
           <p className="text-xl text-gray-600 mb-8">Find answers to your questions or contact our support team</p>
 
-          {/* Search */}
           <div className="relative max-w-2xl mx-auto">
             <Search className="absolute left-4 top-4 h-5 w-5 text-gray-400" />
             <Input
@@ -141,7 +139,6 @@ export default function HelpPage() {
         </div>
       </section>
 
-      {/* Help Categories */}
       <section className="py-16 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -150,30 +147,32 @@ export default function HelpPage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {helpCategories.map((category, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className={`w-12 h-12 ${category.color} rounded-lg flex items-center justify-center mb-4`}>
-                    <category.icon className="h-6 w-6" />
-                  </div>
-                  <CardTitle className="text-xl">{category.title}</CardTitle>
-                  <CardDescription>{category.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <Badge variant="secondary">{category.articles} Articles</Badge>
-                    <Button variant="outline" size="sm">
-                      View
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {helpCategories.map((category, index) => {
+              const IconComponent = category.icon
+              return (
+                <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
+                  <CardHeader>
+                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${category.color}`}>
+                      <IconComponent className="h-6 w-6" />
+                    </div>
+                    <CardTitle className="text-xl">{category.title}</CardTitle>
+                    <CardDescription>{category.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between">
+                      <Badge variant="secondary">{category.articles} Articles</Badge>
+                      <Button variant="outline" size="sm">
+                        View
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* Popular Articles */}
       <section className="py-16 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -212,7 +211,6 @@ export default function HelpPage() {
         </div>
       </section>
 
-      {/* Contact Support */}
       <section className="py-16 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -221,38 +219,41 @@ export default function HelpPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {contactOptions.map((option, index) => (
-              <Card
-                key={index}
-                className={`text-center ${!option.available ? "opacity-60" : "hover:shadow-lg transition-shadow"}`}
-              >
-                <CardHeader>
-                  <div
-                    className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 ${
-                      option.available ? "bg-green-100" : "bg-gray-100"
-                    }`}
-                  >
-                    <option.icon className={`h-8 w-8 ${option.available ? "text-green-600" : "text-gray-400"}`} />
-                  </div>
-                  <CardTitle className="text-xl">{option.title}</CardTitle>
-                  <CardDescription className="text-lg">{option.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 mb-4">{option.responseTime}</p>
-                  <Button
-                    className={option.available ? "bg-green-600 hover:bg-green-700" : ""}
-                    disabled={!option.available}
-                  >
-                    {option.available ? "Contact Us" : "Coming Soon"}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+            {contactOptions.map((option, index) => {
+              const IconComponent = option.icon
+              const cardClasses = option.available
+                ? "text-center hover:shadow-lg transition-shadow"
+                : "text-center opacity-60"
+              const iconBgClasses = option.available
+                ? "w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 bg-green-100"
+                : "w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 bg-gray-100"
+              const iconClasses = option.available ? "h-8 w-8 text-green-600" : "h-8 w-8 text-gray-400"
+
+              return (
+                <Card key={index} className={cardClasses}>
+                  <CardHeader>
+                    <div className={iconBgClasses}>
+                      <IconComponent className={iconClasses} />
+                    </div>
+                    <CardTitle className="text-xl">{option.title}</CardTitle>
+                    <CardDescription className="text-lg">{option.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-600 mb-4">{option.responseTime}</p>
+                    <Button
+                      className={option.available ? "bg-green-600 hover:bg-green-700" : ""}
+                      disabled={!option.available}
+                    >
+                      {option.available ? "Contact Us" : "Coming Soon"}
+                    </Button>
+                  </CardContent>
+                </Card>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* FAQ Preview */}
       <section className="py-16 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
@@ -307,7 +308,6 @@ export default function HelpPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">

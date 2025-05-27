@@ -102,67 +102,73 @@ export default function FAQPage() {
 
           {!searchTerm && (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {faqCategories.map((category) => (
-                <Card key={category.id} className="hover:shadow-lg transition-shadow cursor-pointer">
-                  <CardHeader>
-                    <div className={`w-12 h-12 ${category.color} rounded-lg flex items-center justify-center mb-4`}>
-                      <category.icon className="h-6 w-6" />
-                    </div>
-                    <CardTitle className="text-xl">{category.title}</CardTitle>
-                    <CardDescription>{category.faqs.length} questions</CardDescription>
-                  </CardHeader>
-                </Card>
-              ))}
+              {faqCategories.map((category) => {
+                const IconComponent = category.icon
+                return (
+                  <Card key={category.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardHeader>
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${category.color}`}>
+                        <IconComponent className="h-6 w-6" />
+                      </div>
+                      <CardTitle className="text-xl">{category.title}</CardTitle>
+                      <CardDescription>{category.faqs.length} questions</CardDescription>
+                    </CardHeader>
+                  </Card>
+                )
+              })}
             </div>
           )}
 
           <div className="space-y-8">
-            {filteredFAQs.map((category) => (
-              <div key={category.id}>
-                {searchTerm && (
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className={`w-8 h-8 ${category.color} rounded-lg flex items-center justify-center`}>
-                      <category.icon className="h-4 w-4" />
+            {filteredFAQs.map((category) => {
+              const IconComponent = category.icon
+              return (
+                <div key={category.id}>
+                  {searchTerm && (
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${category.color}`}>
+                        <IconComponent className="h-4 w-4" />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900">{category.title}</h3>
+                      <Badge variant="secondary">{category.faqs.length} results</Badge>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900">{category.title}</h3>
-                    <Badge variant="secondary">{category.faqs.length} results</Badge>
-                  </div>
-                )}
+                  )}
 
-                <div className="space-y-4">
-                  {category.faqs.map((faq) => (
-                    <Card key={faq.id}>
-                      <Collapsible open={openItems.includes(faq.id)} onOpenChange={() => toggleItem(faq.id)}>
-                        <CollapsibleTrigger asChild>
-                          <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors">
-                            <div className="flex items-center justify-between">
-                              <CardTitle className="text-lg text-left">{faq.question}</CardTitle>
-                              {openItems.includes(faq.id) ? (
-                                <ChevronUp className="h-5 w-5 text-gray-400" />
-                              ) : (
-                                <ChevronDown className="h-5 w-5 text-gray-400" />
-                              )}
-                            </div>
-                          </CardHeader>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <CardContent className="pt-0">
-                            <p className="text-gray-600 leading-relaxed mb-4">{faq.answer}</p>
-                            <div className="flex flex-wrap gap-2">
-                              {faq.tags.map((tag) => (
-                                <Badge key={tag} variant="outline" className="text-xs">
-                                  {tag}
-                                </Badge>
-                              ))}
-                            </div>
-                          </CardContent>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    </Card>
-                  ))}
+                  <div className="space-y-4">
+                    {category.faqs.map((faq) => (
+                      <Card key={faq.id}>
+                        <Collapsible open={openItems.includes(faq.id)} onOpenChange={() => toggleItem(faq.id)}>
+                          <CollapsibleTrigger asChild>
+                            <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors">
+                              <div className="flex items-center justify-between">
+                                <CardTitle className="text-lg text-left">{faq.question}</CardTitle>
+                                {openItems.includes(faq.id) ? (
+                                  <ChevronUp className="h-5 w-5 text-gray-400" />
+                                ) : (
+                                  <ChevronDown className="h-5 w-5 text-gray-400" />
+                                )}
+                              </div>
+                            </CardHeader>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <CardContent className="pt-0">
+                              <p className="text-gray-600 leading-relaxed mb-4">{faq.answer}</p>
+                              <div className="flex flex-wrap gap-2">
+                                {faq.tags.map((tag) => (
+                                  <Badge key={tag} variant="outline" className="text-xs">
+                                    {tag}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </CardContent>
+                          </CollapsibleContent>
+                        </Collapsible>
+                      </Card>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           {filteredFAQs.length === 0 && searchTerm && (
