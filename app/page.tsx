@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { MessageSquare, Zap, ArrowRight, CheckCircle } from "lucide-react"
+import { MessageSquare, Zap, ArrowRight, CheckCircle, BookOpen } from "lucide-react"
 import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 
@@ -14,48 +14,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto text-center">
           <div className="flex justify-center mb-6">
             <div className="bg-green-100 p-4 rounded-full">
-              <div className="h-12 w-12 flex items-center justify-center">
-                <svg viewBox="0 0 48 48" className="h-12 w-12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  {/* AI Brain/Head outline */}
-                  <circle cx="24" cy="20" r="14" fill="#16a34a" stroke="#15803d" strokeWidth={2} />
-                  <circle cx="24" cy="20" r="11" fill="#22c55e" />
-
-                  {/* Neural network nodes */}
-                  <circle cx="18" cy="16" r="1.5" fill="#ffffff" />
-                  <circle cx="24" cy="14" r="1.5" fill="#ffffff" />
-                  <circle cx="30" cy="16" r="1.5" fill="#ffffff" />
-                  <circle cx="20" cy="22" r="1.5" fill="#ffffff" />
-                  <circle cx="28" cy="22" r="1.5" fill="#ffffff" />
-                  <circle cx="24" cy="26" r="1.5" fill="#ffffff" />
-
-                  {/* Neural connections */}
-                  <line x1="18" y1="16" x2="24" y2="14" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                  <line x1="24" y1="14" x2="30" y2="16" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                  <line x1="18" y1="16" x2="20" y2="22" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                  <line x1="30" y1="16" x2="28" y2="22" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                  <line x1="20" y1="22" x2="24" y2="26" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                  <line x1="28" y1="22" x2="24" y2="26" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-
-                  {/* Teaching elements - book/knowledge */}
-                  <rect x="16" y="36" width="16" height="8" rx="1" fill="#16a34a" stroke="#15803d" strokeWidth={1} />
-                  <rect x="17" y="37" width="14" height="6" rx="0.5" fill="#ffffff" />
-                  <line x1="24" y1="37" x2="24" y2="43" stroke="#16a34a" strokeWidth={0.5} />
-
-                  {/* Bengali character শি (Shi) in the brain */}
-                  <text
-                    x="24"
-                    y="22"
-                    textAnchor="middle"
-                    className="text-[10px] font-bold fill-white"
-                    style={{ fontFamily: "serif" }}
-                  >
-                    শি
-                  </text>
-
-                  {/* Connection between AI and knowledge */}
-                  <line x1="24" y1="34" x2="24" y2="36" stroke="#16a34a" strokeWidth={2} strokeDasharray="2,2" />
-                </svg>
-              </div>
+              <BookOpen className="h-12 w-12 text-green-600" />
             </div>
           </div>
 
@@ -131,51 +90,7 @@ export default function LandingPage() {
             <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg
-                    viewBox="0 0 48 48"
-                    className="h-8 w-8 text-green-600"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    {/* AI Brain/Head outline */}
-                    <circle cx="24" cy="20" r="14" fill="#16a34a" stroke="#15803d" strokeWidth={2} />
-                    <circle cx="24" cy="20" r="11" fill="#22c55e" />
-
-                    {/* Neural network nodes */}
-                    <circle cx="18" cy="16" r="1.5" fill="#ffffff" />
-                    <circle cx="24" cy="14" r="1.5" fill="#ffffff" />
-                    <circle cx="30" cy="16" r="1.5" fill="#ffffff" />
-                    <circle cx="20" cy="22" r="1.5" fill="#ffffff" />
-                    <circle cx="28" cy="22" r="1.5" fill="#ffffff" />
-                    <circle cx="24" cy="26" r="1.5" fill="#ffffff" />
-
-                    {/* Neural connections */}
-                    <line x1="18" y1="16" x2="24" y2="14" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                    <line x1="24" y1="14" x2="30" y2="16" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                    <line x1="18" y1="16" x2="20" y2="22" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                    <line x1="30" y1="16" x2="28" y2="22" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                    <line x1="20" y1="22" x2="24" y2="26" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                    <line x1="28" y1="22" x2="24" y2="26" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-
-                    {/* Teaching elements - book/knowledge */}
-                    <rect x="16" y="36" width="16" height="8" rx="1" fill="#16a34a" stroke="#15803d" strokeWidth={1} />
-                    <rect x="17" y="37" width="14" height="6" rx="0.5" fill="#ffffff" />
-                    <line x1="24" y1="37" x2="24" y2="43" stroke="#16a34a" strokeWidth={0.5} />
-
-                    {/* Bengali character শি (Shi) in the brain */}
-                    <text
-                      x="24"
-                      y="22"
-                      textAnchor="middle"
-                      className="text-[6px] font-bold fill-white"
-                      style={{ fontFamily: "serif" }}
-                    >
-                      শি
-                    </text>
-
-                    {/* Connection between AI and knowledge */}
-                    <line x1="24" y1="34" x2="24" y2="36" stroke="#16a34a" strokeWidth={2} strokeDasharray="2,2" />
-                  </svg>
+                  <BookOpen className="h-8 w-8 text-green-600" />
                 </div>
                 <CardTitle className="text-xl">Complete Curriculum</CardTitle>
               </CardHeader>
@@ -245,51 +160,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <svg
-                  viewBox="0 0 48 48"
-                  className="h-6 w-6 text-green-400"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  {/* AI Brain/Head outline */}
-                  <circle cx="24" cy="20" r="14" fill="#16a34a" stroke="#15803d" strokeWidth={2} />
-                  <circle cx="24" cy="20" r="11" fill="#22c55e" />
-
-                  {/* Neural network nodes */}
-                  <circle cx="18" cy="16" r="1.5" fill="#ffffff" />
-                  <circle cx="24" cy="14" r="1.5" fill="#ffffff" />
-                  <circle cx="30" cy="16" r="1.5" fill="#ffffff" />
-                  <circle cx="20" cy="22" r="1.5" fill="#ffffff" />
-                  <circle cx="28" cy="22" r="1.5" fill="#ffffff" />
-                  <circle cx="24" cy="26" r="1.5" fill="#ffffff" />
-
-                  {/* Neural connections */}
-                  <line x1="18" y1="16" x2="24" y2="14" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                  <line x1="24" y1="14" x2="30" y2="16" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                  <line x1="18" y1="16" x2="20" y2="22" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                  <line x1="30" y1="16" x2="28" y2="22" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                  <line x1="20" y1="22" x2="24" y2="26" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-                  <line x1="28" y1="22" x2="24" y2="26" stroke="#ffffff" strokeWidth={0.8} opacity={0.7} />
-
-                  {/* Teaching elements - book/knowledge */}
-                  <rect x="16" y="36" width="16" height="8" rx="1" fill="#16a34a" stroke="#15803d" strokeWidth={1} />
-                  <rect x="17" y="37" width="14" height="6" rx="0.5" fill="#ffffff" />
-                  <line x1="24" y1="37" x2="24" y2="43" stroke="#16a34a" strokeWidth={0.5} />
-
-                  {/* Bengali character শি (Shi) in the brain */}
-                  <text
-                    x="24"
-                    y="22"
-                    textAnchor="middle"
-                    className="text-[6px] font-bold fill-white"
-                    style={{ fontFamily: "serif" }}
-                  >
-                    শি
-                  </text>
-
-                  {/* Connection between AI and knowledge */}
-                  <line x1="24" y1="34" x2="24" y2="36" stroke="#16a34a" strokeWidth={2} strokeDasharray="2,2" />
-                </svg>
+                <BookOpen className="h-6 w-6 text-green-400" />
                 <span className="text-xl font-bold">Shikkhok AI</span>
               </div>
               <p className="text-gray-400">Your trusted AI assistant for learning Bengali</p>
