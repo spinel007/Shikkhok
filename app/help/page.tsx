@@ -153,7 +153,7 @@ export default function HelpPage() {
             {helpCategories.map((category, index) => (
               <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardHeader>
-                  <div className={`w-12 h-12 ${category.color} rounded-lg flex items-center justify-center mb-4`}>
+                  <div className={"w-12 h-12 " + category.color + " rounded-lg flex items-center justify-center mb-4"}>
                     <category.icon className="h-6 w-6" />
                   </div>
                   <CardTitle className="text-xl">{category.title}</CardTitle>
@@ -224,15 +224,16 @@ export default function HelpPage() {
             {contactOptions.map((option, index) => (
               <Card
                 key={index}
-                className={`text-center ${!option.available ? "opacity-60" : "hover:shadow-lg transition-shadow"}`}
+                className={"text-center " + (!option.available ? "opacity-60" : "hover:shadow-lg transition-shadow")}
               >
                 <CardHeader>
                   <div
-                    className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 ${
-                      option.available ? "bg-green-100" : "bg-gray-100"
-                    }`}
+                    className={
+                      "w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 " +
+                      (option.available ? "bg-green-100" : "bg-gray-100")
+                    }
                   >
-                    <option.icon className={`h-8 w-8 ${option.available ? "text-green-600" : "text-gray-400"}`} />
+                    <option.icon className={"h-8 w-8 " + (option.available ? "text-green-600" : "text-gray-400")} />
                   </div>
                   <CardTitle className="text-xl">{option.title}</CardTitle>
                   <CardDescription className="text-lg">{option.description}</CardDescription>

@@ -13,7 +13,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Ensure environment variables are available at runtime
   experimental: {
     serverComponentsExternalPackages: ['openai'],
   },

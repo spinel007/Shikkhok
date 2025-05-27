@@ -26,7 +26,7 @@ export default function RootLayout({
           {`
             window.MathJax = {
               tex: {
-                inlineMath: [['$', '$'], ['\\\$$', '\\\$$']],
+                inlineMath: [['$', '$'], ['\\\\$', '\\\\$']],
                 displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
                 processEscapes: true,
                 processEnvironments: true
