@@ -384,7 +384,7 @@ export default function HelpPage() {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; ২০২ৄ শিক্ষক AI. সকল অধিকার সংরক্ষিত।</p>
+            <p>&copy; ২০২৪ শিক্ষক AI. সকল অধিকার সংরক্ষিত।</p>
           </div>
         </div>
       </footer>
