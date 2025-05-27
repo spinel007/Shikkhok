@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { MessageSquare, Zap, ArrowRight, CheckCircle, BookOpen } from "lucide-react"
+import { BookOpen, MessageSquare, Zap, ArrowRight, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 
@@ -123,7 +123,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-12">Our Success Stories</h2>
 
-          <div className="grid md:grid-cols-2 gap-8 justify-center">
+          <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white p-8 rounded-lg shadow-lg">
               <div className="text-4xl font-bold text-green-600 mb-2">10,000+</div>
               <div className="text-gray-600">Active Students</div>
@@ -132,6 +132,11 @@ export default function LandingPage() {
             <div className="bg-white p-8 rounded-lg shadow-lg">
               <div className="text-4xl font-bold text-blue-600 mb-2">50,000+</div>
               <div className="text-gray-600">Questions Solved</div>
+            </div>
+
+            <div className="bg-white p-8 rounded-lg shadow-lg">
+              <div className="text-4xl font-bold text-purple-600 mb-2">98%</div>
+              <div className="text-gray-600">Satisfied Users</div>
             </div>
           </div>
         </div>
