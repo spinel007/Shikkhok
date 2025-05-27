@@ -1,6 +1,6 @@
-import type React from "react"
-import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import type { Metadata } from "next"
+import type { ReactNode } from "react"
 import "./globals.css"
 import { AuthProvider } from "@/hooks/use-auth"
 import { Toaster } from "@/components/ui/toaster"
@@ -17,12 +17,11 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <html lang="en">
       <head>
-        {/* MathJax Configuration */}
         <Script id="mathjax-config" strategy="beforeInteractive">
           {`
             window.MathJax = {
@@ -39,10 +38,8 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* MathJax Polyfill */}
         <Script src="https://polyfill.io/v3/polyfill.min.js?features=es6" strategy="beforeInteractive" />
 
-        {/* MathJax Library */}
         <Script
           id="MathJax-script"
           src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"

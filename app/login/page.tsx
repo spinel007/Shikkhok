@@ -1,8 +1,7 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
+import type { FormEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -23,14 +22,13 @@ export default function LoginPage() {
   const router = useRouter()
   const { login, user } = useAuth()
 
-  // Redirect if already logged in
   useEffect(() => {
     if (user) {
       router.push("/chat")
     }
   }, [user, router])
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
@@ -70,7 +68,6 @@ export default function LoginPage() {
             </Alert>
           )}
 
-          {/* Google Login */}
           <Button
             onClick={handleGoogleLogin}
             variant="outline"
@@ -90,7 +87,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Email Login Form */}
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -153,7 +149,7 @@ export default function LoginPage() {
           </form>
 
           <div className="text-center text-sm text-gray-600">
-            Don't have an account?{" "}
+            {"Don't have an account? "}
             <Link href="/signup" className="text-green-600 hover:text-green-700 font-medium">
               Sign up
             </Link>

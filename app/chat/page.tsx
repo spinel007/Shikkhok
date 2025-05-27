@@ -1,8 +1,7 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect, useRef } from "react"
+import type { ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -64,7 +63,6 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Redirect to login if not authenticated
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login")
@@ -89,12 +87,10 @@ export default function ChatPage() {
 
   const currentChat = chats.find((chat) => chat.id === currentChatId)
 
-  // Scroll to bottom when new messages are added
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [chats])
 
-  // Re-render MathJax when messages change
   useEffect(() => {
     if (typeof window !== "undefined" && window.MathJax) {
       window.MathJax.typesetPromise?.()
@@ -106,16 +102,14 @@ export default function ChatPage() {
     router.push("/")
   }
 
-  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      // Check file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         setError("Image size must be less than 5MB")
         return
       }
 
-      // Check file type
       if (!file.type.startsWith("image/")) {
         setError("Please select a valid image file")
         return
@@ -123,7 +117,6 @@ export default function ChatPage() {
 
       setSelectedImage(file)
 
-      // Create preview
       const reader = new FileReader()
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string)
@@ -144,7 +137,7 @@ export default function ChatPage() {
   const uploadImageToCloudinary = async (file: File): Promise<string> => {
     const formData = new FormData()
     formData.append("file", file)
-    formData.append("upload_preset", "ml_default") // You'll need to set this up in Cloudinary
+    formData.append("upload_preset", "ml_default")
 
     try {
       const response = await fetch("https://api.cloudinary.com/v1_1/demo/image/upload", {
@@ -160,7 +153,6 @@ export default function ChatPage() {
       return data.secure_url
     } catch (error) {
       console.error("Image upload failed:", error)
-      // Fallback: convert to base64
       return new Promise((resolve) => {
         const reader = new FileReader()
         reader.onload = () => resolve(reader.result as string)
@@ -202,7 +194,6 @@ export default function ChatPage() {
       const errorMessage = error instanceof Error ? error.message : "Failed to get AI response"
       setError(`API Error: ${errorMessage}`)
 
-      // Return fallback response
       return getBanglaAIResponse(userMessage, !!imageUrl)
     } finally {
       setIsLoading(false)
@@ -215,7 +206,6 @@ export default function ChatPage() {
     const userMessage = inputMessage.trim() || "ছবি দেখুন এবং ব্যাখ্যা করুন"
     let imageUrl: string | undefined
 
-    // Upload image if selected
     if (selectedImage) {
       try {
         imageUrl = await uploadImageToCloudinary(selectedImage)
@@ -236,14 +226,12 @@ export default function ChatPage() {
       imageUrl,
     }
 
-    // Add user message
     setChats((prev) =>
       prev.map((chat) =>
         chat.id === currentChatId ? { ...chat, messages: [...chat.messages, newUserMessage] } : chat,
       ),
     )
 
-    // Add loading message
     const loadingMessage: Message = {
       id: (Date.now() + 1).toString(),
       content: "Thinking...",
@@ -258,10 +246,8 @@ export default function ChatPage() {
       ),
     )
 
-    // Get AI response
     const aiResponse = await askAI(userMessage, imageUrl)
 
-    // Replace loading message with actual response
     const finalMessage: Message = {
       id: loadingMessage.id,
       content: aiResponse,
@@ -281,7 +267,6 @@ export default function ChatPage() {
       ),
     )
 
-    // Update chat title if it's the first user message
     if (currentChat && currentChat.messages.length === 2) {
       const title = userMessage.length > 30 ? userMessage.substring(0, 30) + "..." : userMessage
       setChats((prev) => prev.map((chat) => (chat.id === currentChatId ? { ...chat, title } : chat)))
@@ -304,7 +289,6 @@ export default function ChatPage() {
 🔊 ভয়েস: ছবি সহ প্রশ্ন করলে আরো ভালো সাহায্য করতে পারব।`
     }
 
-    // Fallback responses when OpenAI is not available
     const responses = [
       `**ব্যাখ্যা:** এটি একটি গুরুত্বপূর্ণ বিষয়। বাংলায় এই নিয়মটি বুঝতে হলে প্রথমে মূল ধারণাটি জানতে হবে।
 
@@ -371,7 +355,6 @@ export default function ChatPage() {
     setCurrentChatId(newChat.id)
   }
 
-  // Show loading while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -383,14 +366,12 @@ export default function ChatPage() {
     )
   }
 
-  // Don't render if not authenticated (will redirect)
   if (!user) {
     return null
   }
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
       <div
         className={`${sidebarOpen ? "w-64" : "w-0"} transition-all duration-300 bg-gray-900 text-white overflow-hidden`}
       >
@@ -430,9 +411,7 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
-        {/* Header */}
         <div className="bg-white border-b border-gray-200 p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(!sidebarOpen)}>
@@ -449,7 +428,6 @@ export default function ChatPage() {
             </div>
           </div>
 
-          {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm">
@@ -479,7 +457,6 @@ export default function ChatPage() {
           </DropdownMenu>
         </div>
 
-        {/* Error Alert */}
         {error && (
           <div className="p-4">
             <Alert variant="destructive">
@@ -489,7 +466,6 @@ export default function ChatPage() {
           </div>
         )}
 
-        {/* Messages */}
         <ScrollArea className="flex-1 p-4">
           <div className="max-w-3xl mx-auto space-y-6">
             {currentChat?.messages.map((message) => (
@@ -510,7 +486,6 @@ export default function ChatPage() {
                     message.role === "user" ? "bg-blue-600 text-white ml-auto" : "bg-white border border-gray-200"
                   }`}
                 >
-                  {/* Image display */}
                   {message.imageUrl && (
                     <div className="mb-3">
                       <Image
@@ -544,10 +519,8 @@ export default function ChatPage() {
           </div>
         </ScrollArea>
 
-        {/* Input Area */}
         <div className="bg-white border-t border-gray-200 p-4">
           <div className="max-w-3xl mx-auto">
-            {/* Image Preview */}
             {imagePreview && (
               <div className="mb-3 relative inline-block">
                 <Image
@@ -569,10 +542,8 @@ export default function ChatPage() {
             )}
 
             <div className="flex gap-3">
-              {/* File input */}
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageSelect} className="hidden" />
 
-              {/* Attachment button */}
               <Button
                 onClick={() => fileInputRef.current?.click()}
                 variant="outline"
@@ -606,7 +577,6 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* Debug Panel - only show in development */}
       {process.env.NODE_ENV === "development" && <DebugPanel />}
     </div>
   )

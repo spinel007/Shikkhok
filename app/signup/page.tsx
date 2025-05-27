@@ -1,8 +1,7 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
+import type { FormEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -30,7 +29,6 @@ export default function SignupPage() {
   const router = useRouter()
   const { signup, user } = useAuth()
 
-  // Redirect if already logged in
   useEffect(() => {
     if (user) {
       router.push("/chat")
@@ -41,7 +39,7 @@ export default function SignupPage() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignup = async (e: FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
@@ -87,7 +85,6 @@ export default function SignupPage() {
             </Alert>
           )}
 
-          {/* Google Signup */}
           <Button
             onClick={handleGoogleSignup}
             variant="outline"
@@ -107,7 +104,6 @@ export default function SignupPage() {
             </div>
           </div>
 
-          {/* Email Signup Form */}
           <form onSubmit={handleSignup} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
@@ -206,11 +202,11 @@ export default function SignupPage() {
                 onCheckedChange={(checked) => handleInputChange("agreeToTerms", checked as boolean)}
               />
               <Label htmlFor="terms" className="text-sm text-gray-600">
-                I agree to the{" "}
+                {"I agree to the "}
                 <Link href="#" className="text-green-600 hover:text-green-700">
                   Terms of Use
-                </Link>{" "}
-                and{" "}
+                </Link>
+                {" and "}
                 <Link href="#" className="text-green-600 hover:text-green-700">
                   Privacy Policy
                 </Link>
@@ -227,7 +223,7 @@ export default function SignupPage() {
           </form>
 
           <div className="text-center text-sm text-gray-600">
-            Already have an account?{" "}
+            {"Already have an account? "}
             <Link href="/login" className="text-green-600 hover:text-green-700 font-medium">
               লগইন করুন
             </Link>
