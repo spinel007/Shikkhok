@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Mail, Phone, MapPin, Clock, Send, MessageSquare, BookOpen } from "lucide-react"
 import { Navbar } from "@/components/navbar"
+import Link from "next/link"
 
 export default function ContactPage() {
   const contactMethods = [
@@ -292,19 +293,19 @@ export default function ContactPage() {
               <h3 className="font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <a href="/chat" className="hover:text-white">
+                  <Link href="/chat" className="hover:text-white">
                     Chat
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/lessons" className="hover:text-white">
+                  <Link href="/lessons" className="hover:text-white">
                     Lessons
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/practice" className="hover:text-white">
+                  <Link href="/practice" className="hover:text-white">
                     Practice
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -313,19 +314,19 @@ export default function ContactPage() {
               <h3 className="font-semibold mb-4">Support</h3>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <a href="/help" className="hover:text-white">
+                  <Link href="/help" className="hover:text-white">
                     Help Center
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/contact" className="hover:text-white">
+                  <Link href="/contact" className="hover:text-white">
                     Contact
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/faq" className="hover:text-white">
+                  <Link href="/faq" className="hover:text-white">
                     FAQ
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -334,19 +335,19 @@ export default function ContactPage() {
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <a href="/about" className="hover:text-white">
+                  <Link href="/about" className="hover:text-white">
                     About Us
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/privacy" className="hover:text-white">
+                  <Link href="/privacy" className="hover:text-white">
                     Privacy Policy
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/terms" className="hover:text-white">
+                  <Link href="/terms" className="hover:text-white">
                     Terms of Service
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>

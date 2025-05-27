@@ -362,21 +362,21 @@ export default function HelpPage() {
             </div>
 
             <div>
-              <h3 className="font-semibold mb-4">কোম্পানি</h3>
+              <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
                 <li>
                   <Link href="/about" className="hover:text-white">
-                    আমাদের সম্পর্কে
+                    About Us
                   </Link>
                 </li>
                 <li>
                   <Link href="/privacy" className="hover:text-white">
-                    গোপনীয়তা নীতি
+                    Privacy Policy
                   </Link>
                 </li>
                 <li>
                   <Link href="/terms" className="hover:text-white">
-                    ব্যবহারের শর্তাবলী
+                    Terms of Service
                   </Link>
                 </li>
               </ul>
@@ -384,7 +384,7 @@ export default function HelpPage() {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; ২০২ৄ শিক্ষক AI. সকল অধিকার সংরক্ষিত।</p>
+            <p>&copy; 2024 Shikkhok AI. All rights reserved.</p>
           </div>
         </div>
       </footer>
