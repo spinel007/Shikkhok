@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { toast } from "@/components/ui/use-toast"
 import { useAuth } from "@/hooks/use-auth"
+import { Textarea } from "@/components/ui/textarea"
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile")
@@ -202,13 +203,12 @@ export default function SettingsPage() {
 
             <div className="space-y-2 mt-6">
               <Label htmlFor="bio">Bio</Label>
-              <textarea
+              <Textarea
                 id="bio"
                 rows={4}
                 value={profileData.bio}
                 onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
                 placeholder="Tell us about yourself..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
               />
             </div>
 
@@ -1139,13 +1139,12 @@ export default function SettingsPage() {
 
               <div className="space-y-2 mt-6">
                 <Label htmlFor="bio">Bio</Label>
-                <textarea
+                <Textarea
                   id="bio"
                   rows={4}
                   value={profileData.bio}
                   onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
                   placeholder="Tell us about yourself..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 />
               </div>
 
