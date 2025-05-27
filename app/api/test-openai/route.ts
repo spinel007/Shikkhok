@@ -18,6 +18,7 @@ export async function GET() {
         details: {
           hasApiKey: false,
           hasAssistantId,
+          note: "Please set OPENAI_API_KEY environment variable",
         },
       })
     }
@@ -29,20 +30,53 @@ export async function GET() {
         details: {
           hasApiKey: true,
           hasAssistantId: false,
+          note: "ASSISTANT_ID is optional for basic chat functionality",
         },
       })
     }
 
-    // For deployment stability, just return success if env vars exist
-    return NextResponse.json({
-      status: "success",
-      message: "Environment variables are configured",
-      details: {
-        hasApiKey: true,
-        hasAssistantId: true,
-        note: "OpenAI API testing disabled for deployment stability",
-      },
-    })
+    // Test OpenAI API connection
+    try {
+      const response = await fetch("https://api.openai.com/v1/models", {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        },
+      })
+
+      if (response.ok) {
+        return NextResponse.json({
+          status: "success",
+          message: "OpenAI API connection successful",
+          details: {
+            hasApiKey: true,
+            hasAssistantId: true,
+            apiConnected: true,
+          },
+        })
+      } else {
+        return NextResponse.json({
+          status: "error",
+          message: "OpenAI API connection failed",
+          details: {
+            hasApiKey: true,
+            hasAssistantId: true,
+            apiConnected: false,
+            statusCode: response.status,
+          },
+        })
+      }
+    } catch (apiError) {
+      return NextResponse.json({
+        status: "error",
+        message: "Failed to connect to OpenAI API",
+        details: {
+          hasApiKey: true,
+          hasAssistantId: true,
+          apiConnected: false,
+          error: apiError instanceof Error ? apiError.message : "Unknown error",
+        },
+      })
+    }
   } catch (error: any) {
     console.error("Test failed:", error)
 

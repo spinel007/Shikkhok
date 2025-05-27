@@ -18,9 +18,56 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 })
     }
 
-    // Always use fallback for now to avoid OpenAI API issues during deployment
-    console.log("Using fallback response for deployment stability")
-    return NextResponse.json({ reply: getBanglaAIResponse(userMessage, !!imageUrl) })
+    // Check if we have OpenAI credentials
+    if (!process.env.OPENAI_API_KEY || !process.env.ASSISTANT_ID) {
+      console.log("Missing OpenAI credentials, using fallback")
+      return NextResponse.json({ reply: getBanglaAIResponse(userMessage, !!imageUrl) })
+    }
+
+    // Try OpenAI API
+    try {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a Bengali language tutor. Respond in Bengali and English mix. Help students learn Bengali grammar, vocabulary, and literature. Use examples and be encouraging.",
+            },
+            {
+              role: "user",
+              content: userMessage,
+            },
+          ],
+          max_tokens: 500,
+          temperature: 0.7,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`OpenAI API error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      const aiReply = data.choices[0]?.message?.content
+
+      if (aiReply) {
+        console.log("OpenAI response received successfully")
+        return NextResponse.json({ reply: aiReply })
+      } else {
+        throw new Error("No response from OpenAI")
+      }
+    } catch (openaiError) {
+      console.error("OpenAI API failed:", openaiError)
+      console.log("Falling back to local response")
+      return NextResponse.json({ reply: getBanglaAIResponse(userMessage, !!imageUrl) })
+    }
   } catch (error: any) {
     console.error("API Error:", error)
     return NextResponse.json({
