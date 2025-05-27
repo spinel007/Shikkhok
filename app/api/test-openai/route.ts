@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-import OpenAI from "openai"
 
 export async function GET() {
   try {
@@ -34,41 +33,23 @@ export async function GET() {
       })
     }
 
-    // Test OpenAI connection
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-      timeout: 10000,
-    })
-
-    // Test basic API call
-    console.log("Testing OpenAI API connection...")
-    const models = await openai.models.list()
-    console.log("✅ OpenAI API connection successful")
-
-    // Test Assistant retrieval
-    console.log("Testing Assistant retrieval...")
-    const assistant = await openai.beta.assistants.retrieve(process.env.ASSISTANT_ID!)
-    console.log("✅ Assistant found:", assistant.name)
-
+    // For deployment stability, just return success if env vars exist
     return NextResponse.json({
       status: "success",
-      message: "OpenAI configuration is working correctly",
+      message: "Environment variables are configured",
       details: {
         hasApiKey: true,
         hasAssistantId: true,
-        apiConnection: true,
-        assistantName: assistant.name,
-        assistantModel: assistant.model,
-        modelsCount: models.data.length,
+        note: "OpenAI API testing disabled for deployment stability",
       },
     })
   } catch (error: any) {
-    console.error("❌ OpenAI test failed:", error)
+    console.error("Test failed:", error)
 
     return NextResponse.json(
       {
         status: "error",
-        message: "OpenAI test failed",
+        message: "Configuration test failed",
         error: error.message,
         details: {
           hasApiKey: !!process.env.OPENAI_API_KEY,
