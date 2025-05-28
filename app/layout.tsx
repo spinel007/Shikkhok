@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import type { ReactNode } from "react"
 import "./globals.css"
 import { AuthProvider } from "@/hooks/use-auth"
+import { LanguageProvider } from "@/hooks/use-language"
 import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -43,8 +44,10 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <AuthProvider>
-          {children}
-          <Toaster />
+          <LanguageProvider>
+            {children}
+            <Toaster />
+          </LanguageProvider>
         </AuthProvider>
       </body>
     </html>

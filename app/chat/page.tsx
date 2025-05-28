@@ -12,7 +12,6 @@ import {
   Send,
   Plus,
   MessageSquare,
-  BookOpen,
   Menu,
   Bot,
   LogOut,
@@ -21,6 +20,8 @@ import {
   Loader2,
   ImageIcon,
   X,
+  Trash2,
+  Brain,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -32,15 +33,15 @@ import {
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
+import { useLanguage } from "@/hooks/use-language"
+import { LanguageSelector } from "@/components/language-selector"
 import Image from "next/image"
-import { DebugPanel } from "./debug-panel"
 
 interface Message {
   id: string
   content: string
   role: "user" | "assistant"
-  timestamp: Date
-  isLoading?: boolean
+  createdAt: string
   imageUrl?: string
 }
 
@@ -48,17 +49,22 @@ interface Chat {
   id: string
   title: string
   messages: Message[]
+  createdAt: string
+  updatedAt: string
 }
 
 export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [currentChatId, setCurrentChatId] = useState("1")
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null)
   const [inputMessage, setInputMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [chats, setChats] = useState<Chat[]>([])
+  const [loadingChats, setLoadingChats] = useState(true)
   const { user, logout, loading } = useAuth()
+  const { language, t } = useLanguage()
   const router = useRouter()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -69,33 +75,46 @@ export default function ChatPage() {
     }
   }, [user, loading, router])
 
-  const [chats, setChats] = useState<Chat[]>([
-    {
-      id: "1",
-      title: "Learning Bengali Grammar",
-      messages: [
-        {
-          id: "1",
-          content:
-            "আসসালামু আলাইকুম! আমি শিক্ষক, আপনার বাংলা ভাষা শেখার সহায়ক। আজ আপনি কী শিখতে চান? আপনি টেক্সট বা ছবি পাঠিয়ে প্রশ্ন করতে পারেন।\n\n🔊 ভয়েস: আসসালামু আলাইকুম, আমি শিক্ষক, আপনার বাংলা টিউটর।",
-          role: "assistant",
-          timestamp: new Date(),
-        },
-      ],
-    },
-  ])
+  // Load user chats from database
+  useEffect(() => {
+    if (user) {
+      loadChats()
+    }
+  }, [user])
+
+  const loadChats = async () => {
+    try {
+      setLoadingChats(true)
+      const response = await fetch("/api/chat")
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      const data = await response.json()
+      setChats(data.chats || [])
+
+      // If no current chat and we have chats, select the first one
+      if (!currentChatId && data.chats && data.chats.length > 0) {
+        setCurrentChatId(data.chats[0].id)
+      }
+    } catch (error) {
+      console.error("Failed to load chats:", error)
+      setError("Failed to load chats. Please try again.")
+    } finally {
+      setLoadingChats(false)
+    }
+  }
 
   const currentChat = chats.find((chat) => chat.id === currentChatId)
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [chats])
+  }, [currentChat?.messages])
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.MathJax) {
       window.MathJax.typesetPromise?.()
     }
-  }, [chats])
+  }, [currentChat?.messages])
 
   const handleLogout = async () => {
     await logout()
@@ -166,44 +185,98 @@ export default function ChatPage() {
     setError("")
 
     try {
-      console.log("Sending request to /api/ask...")
+      // First, add the user message to the chat
+      if (currentChatId) {
+        await fetch(`/api/chat/${currentChatId}/messages`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: userMessage,
+            role: "user",
+            imageUrl,
+          }),
+        })
+      }
+
+      // Then get AI response
       const res = await fetch("/api/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userMessage, imageUrl }),
+        body: JSON.stringify({
+          userMessage,
+          imageUrl,
+          language: language,
+          chatId: currentChatId,
+        }),
       })
 
-      console.log("Response status:", res.status)
-
       if (!res.ok) {
+        if (res.status === 401) {
+          router.push("/login")
+          return "Please log in to continue."
+        }
         const errorText = await res.text()
-        console.error("API Error Response:", errorText)
         throw new Error("HTTP " + res.status + ": " + errorText)
       }
 
       const data = await res.json()
-      console.log("API Response received:", { hasReply: !!data.reply, hasError: !!data.error })
 
       if (data.error) {
         throw new Error(data.error)
+      }
+
+      // Add AI response to chat
+      if (currentChatId) {
+        await fetch(`/api/chat/${currentChatId}/messages`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: data.reply,
+            role: "assistant",
+          }),
+        })
+      }
+
+      // Reload the current chat to get updated messages
+      if (currentChatId) {
+        await loadCurrentChat()
       }
 
       return data.reply
     } catch (error) {
       console.error("AI API Error:", error)
       const errorMessage = error instanceof Error ? error.message : "Failed to get AI response"
-      setError("API Error: " + errorMessage)
-
-      return getBanglaAIResponse(userMessage, !!imageUrl)
+      setError("Error: " + errorMessage)
+      return "Sorry, I'm having trouble responding right now. Please try again."
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const loadCurrentChat = async () => {
+    if (!currentChatId) return
+
+    try {
+      const response = await fetch(`/api/chat/${currentChatId}`)
+      if (response.ok) {
+        const data = await response.json()
+        setChats((prev) => prev.map((chat) => (chat.id === currentChatId ? data.chat : chat)))
+      }
+    } catch (error) {
+      console.error("Failed to load current chat:", error)
     }
   }
 
   const handleSendMessage = async () => {
     if ((!inputMessage.trim() && !selectedImage) || isLoading) return
 
-    const userMessage = inputMessage.trim() || "ছবি দেখুন এবং ব্যাখ্যা করুন"
+    // Create new chat if none exists
+    if (!currentChatId) {
+      await createNewChat()
+      return
+    }
+
+    const userMessage = inputMessage.trim() || (language === "bn" ? "ছবি দেখুন" : "Please analyze this image")
     let imageUrl: string | undefined
 
     if (selectedImage) {
@@ -218,99 +291,66 @@ export default function ChatPage() {
     setInputMessage("")
     removeImage()
 
-    const newUserMessage: Message = {
-      id: Date.now().toString(),
-      content: userMessage,
-      role: "user",
-      timestamp: new Date(),
-      imageUrl,
-    }
+    // The API will handle saving messages to database
+    await askAI(userMessage, imageUrl)
+  }
 
-    setChats((prev) =>
-      prev.map((chat) =>
-        chat.id === currentChatId ? { ...chat, messages: [...chat.messages, newUserMessage] } : chat,
-      ),
-    )
+  const createNewChat = async () => {
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: "New Conversation" }),
+      })
 
-    const loadingMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      content: "Thinking...",
-      role: "assistant",
-      timestamp: new Date(),
-      isLoading: true,
-    }
+      if (response.ok) {
+        const data = await response.json()
+        setChats((prev) => [data.chat, ...prev])
+        setCurrentChatId(data.chat.id)
 
-    setChats((prev) =>
-      prev.map((chat) =>
-        chat.id === currentChatId ? { ...chat, messages: [...chat.messages, loadingMessage] } : chat,
-      ),
-    )
-
-    const aiResponse = await askAI(userMessage, imageUrl)
-
-    const finalMessage: Message = {
-      id: loadingMessage.id,
-      content: aiResponse,
-      role: "assistant",
-      timestamp: new Date(),
-      isLoading: false,
-    }
-
-    setChats((prev) =>
-      prev.map((chat) =>
-        chat.id === currentChatId
-          ? {
-              ...chat,
-              messages: chat.messages.map((msg) => (msg.id === loadingMessage.id ? finalMessage : msg)),
-            }
-          : chat,
-      ),
-    )
-
-    if (currentChat && currentChat.messages.length === 2) {
-      const title = userMessage.length > 30 ? userMessage.substring(0, 30) + "..." : userMessage
-      setChats((prev) => prev.map((chat) => (chat.id === currentChatId ? { ...chat, title } : chat)))
+        // If we have a message ready to send, send it after chat creation
+        if (inputMessage.trim() || selectedImage) {
+          // We need to wait a bit to ensure the chat is created
+          setTimeout(() => {
+            handleSendMessage()
+          }, 500)
+        }
+      } else {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to create chat")
+      }
+    } catch (error) {
+      console.error("Failed to create chat:", error)
+      setError("Failed to create new chat")
     }
   }
 
-  const getBanglaAIResponse = (userMessage: string, hasImage = false): string => {
-    if (hasImage) {
-      return "**ছবি বিশ্লেষণ:** আপনার পাঠানো ছবিটি দেখে মনে হচ্ছে এটি বাংলা ভাষার একটি গুরুত্বপূর্ণ বিষয়।\n\n**ব্যাখ্যা:** ছবিতে যা দেখানো হয়েছে তা বুঝতে হলে প্রসঙ্গ জানা দরকার।\n\n**পরামর্শ:**\n• ছবির সাথে একটি নির্দিষ্ট প্রশ্ন করুন\n• কোন বিষয়ে সাহায্য চান তা বলুন\n• আরো বিস্তারিত তথ্য দিন\n\nআরো জানতে চাইলে বলুন!\n\n🔊 ভয়েস: ছবি সহ প্রশ্ন করলে আরো ভালো সাহায্য করতে পারব।"
+  const deleteChat = async (chatId: string) => {
+    try {
+      const response = await fetch(`/api/chat/${chatId}`, {
+        method: "DELETE",
+      })
+
+      if (response.ok) {
+        setChats((prev) => prev.filter((chat) => chat.id !== chatId))
+
+        // If we deleted the current chat, select another one
+        if (currentChatId === chatId) {
+          const remainingChats = chats.filter((chat) => chat.id !== chatId)
+          setCurrentChatId(remainingChats.length > 0 ? remainingChats[0].id : null)
+        }
+      }
+    } catch (error) {
+      console.error("Failed to delete chat:", error)
+      setError("Failed to delete chat")
     }
-
-    const responses = [
-      '**ব্যাখ্যা:** এটি একটি গুরুত্বপূর্ণ বিষয়। বাংলায় এই নিয়মটি বুঝতে হলে প্রথমে মূল ধারণাটি জানতে হবে।\n\n**উদাহরণ:** যেমন "আমি বই পড়ি" (Ami boi pori) বাক্যে "আমি" (Ami) কর্তা, "বই" (boi) কর্ম এবং "পড়ি" (pori) ক্রিয়া।\n\n**গাণিতিক সূত্র:** $$a^2 + b^2 = c^2$$\n\n**চিত্র:**\nকর্তা → ক্রিয়া → কর্ম\nআমি → পড়ি → বই\n\nআরো জানতে চাইলে বলুন!\n\n🔊 ভয়েস: বাংলা ব্যাকরণে কর্তা, ক্রিয়া ও কর্মের সম্পর্ক বুঝতে হবে।',
-
-      '**ব্যাখ্যা:** চমৎকার প্রশ্ন! এই বিষয়টি নবম-দশম শ্রেণির পাঠ্যক্রমে খুবই গুরুত্বপূর্ণ।\n\n**উদাহরণ:** যেমন "সূর্য পূর্ব দিকে ওঠে" (Surjo purbo dike othe) - এখানে সূর্য ওঠার নিয়মটি প্রকৃতির চিরন্তন সত্য।\n\n**গণিত:** বৃত্তের ক্ষেত্রফল = $\\pi r^2$\n\n**বিশেষ টিপস:**\n• নিয়মিত অনুশীলন করুন\n• উদাহরণ দিয়ে বুঝুন\n• প্রশ্ন করতে দ্বিধা করবেন না\n\nআরো জানতে চাইলে বলুন!\n\n🔊 ভয়েস: নিয়মিত অনুশীলনে বাংলা সহজ হয়ে যাবে।',
-
-      '**ব্যাখ্যা:** এটি একটি সাধারণ ভুল যা অনেকেই করে থাকেন। চলুন সঠিক নিয়মটি শিখি।\n\n**উদাহরণ:**\n✗ ভুল: "আমি স্কুলে যাবো" (Ami school-e jabo)\n✓ সঠিক: "আমি স্কুলে যাব" (Ami school-e jab)\n\n**সমীকরণ:** $x + y = z$ যেখানে $x$ হল কর্তা, $y$ হল ক্রিয়া এবং $z$ হল সম্পূর্ণ বাক্য।\n\n**মনে রাখার কৌশল:**\nভবিষ্যৎ কালে "বো" এর পরিবর্তে "ব" ব্যবহার করুন।\n\nআরো জানতে চাইলে বলুন!\n\n🔊 ভয়েস: ভবিষ্যৎ কালে সঠিক বানান ব্যবহার করা জরুরি।',
-    ]
-    return responses[Math.floor(Math.random() * responses.length)]
   }
 
-  const createNewChat = () => {
-    const newChat: Chat = {
-      id: Date.now().toString(),
-      title: "New Conversation",
-      messages: [
-        {
-          id: Date.now().toString(),
-          content:
-            "আসসালামু আলাইকুম! আমি শিক্ষক, আপনার বাংলা ভাষা শেখার সহায়ক। আজ আপনি কী শিখতে চান? আপনি টেক্সট বা ছবি পাঠিয়ে প্রশ্ন করতে পারেন।\n\n🔊 ভয়েস: আসসালামু আলাইকুম, আমি শিক্ষক, আপনার বাংলা টিউটর।",
-          role: "assistant",
-          timestamp: new Date(),
-        },
-      ],
-    }
-    setChats((prev) => [newChat, ...prev])
-    setCurrentChatId(newChat.id)
-  }
-
-  if (loading) {
+  if (loading || loadingChats) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <BookOpen className="h-12 w-12 text-green-600 mx-auto mb-4" />
+          <Brain className="h-12 w-12 text-blue-600 mx-auto mb-4" />
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -328,8 +368,8 @@ export default function ChatPage() {
       >
         <div className="p-4">
           <div className="flex items-center gap-2 mb-6">
-            <BookOpen className="h-8 w-8 text-green-400" />
-            <h1 className="text-xl font-bold">শিক্ষক AI</h1>
+            <Brain className="h-8 w-8 text-blue-400" />
+            <h1 className="text-xl font-bold">Shikkhok AI</h1>
           </div>
 
           <Button
@@ -343,19 +383,31 @@ export default function ChatPage() {
           <ScrollArea className="h-[calc(100vh-200px)]">
             <div className="space-y-2">
               {chats.map((chat) => (
-                <Button
-                  key={chat.id}
-                  variant={currentChatId === chat.id ? "secondary" : "ghost"}
-                  className={`w-full justify-start text-left p-3 h-auto ${
-                    currentChatId === chat.id
-                      ? "bg-gray-700 text-white"
-                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
-                  }`}
-                  onClick={() => setCurrentChatId(chat.id)}
-                >
-                  <MessageSquare className="h-4 w-4 mr-2 flex-shrink-0" />
-                  <span className="truncate">{chat.title}</span>
-                </Button>
+                <div key={chat.id} className="group relative">
+                  <Button
+                    variant={currentChatId === chat.id ? "secondary" : "ghost"}
+                    className={`w-full justify-start text-left p-3 h-auto pr-10 ${
+                      currentChatId === chat.id
+                        ? "bg-gray-700 text-white"
+                        : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                    }`}
+                    onClick={() => setCurrentChatId(chat.id)}
+                  >
+                    <MessageSquare className="h-4 w-4 mr-2 flex-shrink-0" />
+                    <span className="truncate">{chat.title}</span>
+                  </Button>
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      deleteChat(chat.id)
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0 text-gray-400 hover:text-red-400"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
               ))}
             </div>
           </ScrollArea>
@@ -369,43 +421,49 @@ export default function ChatPage() {
               <Menu className="h-5 w-5" />
             </Button>
             <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8 bg-green-100">
-                <AvatarFallback className="text-green-700 font-bold">শি</AvatarFallback>
+              <Avatar className="h-8 w-8 bg-blue-100">
+                <AvatarFallback className="text-blue-700 font-bold">
+                  <Brain className="h-4 w-4" />
+                </AvatarFallback>
               </Avatar>
               <div>
-                <h2 className="font-semibold text-gray-900">শিক্ষক AI</h2>
-                <p className="text-sm text-gray-500">Bengali Language Tutor</p>
+                <h2 className="font-semibold text-gray-900">{t("aiTutor")}</h2>
+                <p className="text-sm text-gray-500">{t("bengaliLanguageTutor")}</p>
               </div>
             </div>
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <Avatar className="h-8 w-8 bg-blue-100">
-                  <AvatarFallback className="text-blue-700 text-sm font-medium">
-                    {user.name.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <div className="px-2 py-1.5 text-sm font-medium">{user.name}</div>
-              <div className="px-2 py-1.5 text-xs text-gray-500">{user.email}</div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/settings">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Logout</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-3">
+            <LanguageSelector />
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <Avatar className="h-8 w-8 bg-blue-100">
+                    <AvatarFallback className="text-blue-700 text-sm font-medium">
+                      {user.name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="px-2 py-1.5 text-sm font-medium">{user.name}</div>
+                <div className="px-2 py-1.5 text-xs text-gray-500">{user.email}</div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/settings">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         {error && (
@@ -419,15 +477,27 @@ export default function ChatPage() {
 
         <ScrollArea className="flex-1 p-4">
           <div className="max-w-3xl mx-auto space-y-6">
-            {currentChat?.messages.map((message) => (
+            {!currentChat && chats.length === 0 && (
+              <div className="text-center py-12">
+                <Brain className="h-16 w-16 text-blue-300 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Welcome to Shikkhok AI!</h3>
+                <p className="text-gray-600 mb-6">Start a new conversation to begin learning Bengali.</p>
+                <Button onClick={createNewChat} className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Start New Chat
+                </Button>
+              </div>
+            )}
+
+            {currentChat?.messages?.map((message) => (
               <div
                 key={message.id}
                 className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 {message.role === "assistant" && (
-                  <Avatar className="h-8 w-8 bg-green-100 flex-shrink-0">
-                    <AvatarFallback className="text-green-700">
-                      {message.isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bot className="h-4 w-4" />}
+                  <Avatar className="h-8 w-8 bg-blue-100 flex-shrink-0">
+                    <AvatarFallback className="text-blue-700">
+                      <Bot className="h-4 w-4" />
                     </AvatarFallback>
                   </Avatar>
                 )}
@@ -449,12 +519,8 @@ export default function ChatPage() {
                     </div>
                   )}
 
-                  <div
-                    className="text-sm leading-relaxed whitespace-pre-wrap"
-                    dangerouslySetInnerHTML={{
-                      __html: message.content.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-                    }}
-                  />
+                  <div className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</div>
+                  <div className="text-xs opacity-70 mt-2">{new Date(message.createdAt).toLocaleTimeString()}</div>
                 </Card>
 
                 {message.role === "user" && (
@@ -466,6 +532,20 @@ export default function ChatPage() {
                 )}
               </div>
             ))}
+
+            {isLoading && (
+              <div className="flex gap-3 justify-start">
+                <Avatar className="h-8 w-8 bg-blue-100 flex-shrink-0">
+                  <AvatarFallback className="text-blue-700">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  </AvatarFallback>
+                </Avatar>
+                <Card className="bg-white border border-gray-200 p-4">
+                  <div className="text-sm text-gray-600">{t("thinking")}</div>
+                </Card>
+              </div>
+            )}
+
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
@@ -508,27 +588,27 @@ export default function ChatPage() {
               <Input
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Type your question or upload an image..."
-                className="flex-1 border-gray-300 focus:border-green-500 focus:ring-green-500"
+                placeholder={t("chatPlaceholder")}
+                className="flex-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
                 disabled={isLoading}
               />
               <Button
                 onClick={handleSendMessage}
-                className="bg-green-600 hover:bg-green-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
                 disabled={(!inputMessage.trim() && !selectedImage) || isLoading}
               >
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>
             </div>
             <p className="text-xs text-gray-500 mt-2 text-center">
-              শিক্ষক AI বাংলা ভাষা শেখার জন্য ডিজাইন করা হয়েছে। ভুল তথ্য থাকতে পারে। ছবি আপলোড করে প্রশ্ন করতে পারেন।
+              Shikkhok AI is designed for Bengali language learning. All conversations are saved to your account.
             </p>
           </div>
         </div>
       </div>
 
-      {process.env.NODE_ENV === "development" && <DebugPanel />}
+      {process.env.NODE_ENV === "development" && null}
     </div>
   )
 }

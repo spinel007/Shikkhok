@@ -20,10 +20,18 @@ export async function POST(request: NextRequest) {
     // Create session
     await createSession(user.id)
 
+    console.log(`User logged in: ${user.email}`)
+
     return NextResponse.json(
       {
         message: "Login successful",
-        user: { id: user.id, name: user.name, email: user.email },
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          createdAt: user.createdAt,
+          preferences: user.preferences,
+        },
       },
       { status: 200 },
     )

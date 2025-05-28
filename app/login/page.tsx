@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { BookOpen, Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react"
+import { Mail, Lock, Eye, EyeOff, AlertCircle, Brain } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
@@ -52,8 +52,8 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="bg-green-100 p-3 rounded-full">
-              <BookOpen className="h-8 w-8 text-green-600" />
+            <div className="bg-blue-100 p-3 rounded-full">
+              <Brain className="h-8 w-8 text-blue-600" />
             </div>
           </div>
           <CardTitle className="text-2xl font-bold">Welcome to Shikkhok AI</CardTitle>

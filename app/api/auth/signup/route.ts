@@ -3,11 +3,26 @@ import { createUser, createSession } from "@/lib/auth"
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password, confirmPassword } = await request.json()
+    // Parse request body safely
+    let body
+    try {
+      body = await request.json()
+    } catch (e) {
+      console.error("Failed to parse request body:", e)
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
+    }
 
-    // Validation
+    const { name, email, password, confirmPassword } = body
+
+    // Validation with detailed error messages
     if (!name || !email || !password || !confirmPassword) {
-      return NextResponse.json({ error: "All fields are required" }, { status: 400 })
+      return NextResponse.json(
+        {
+          error: "All fields are required",
+          missing: { name: !name, email: !email, password: !password, confirmPassword: !confirmPassword },
+        },
+        { status: 400 },
+      )
     }
 
     if (password !== confirmPassword) {
@@ -24,25 +39,52 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid email format" }, { status: 400 })
     }
 
-    // Create user
-    const user = await createUser(name, email, password)
+    // Create user with error handling
+    try {
+      const user = await createUser(name, email, password)
 
-    // Create session
-    await createSession(user.id)
+      // Create session
+      await createSession(user.id)
 
+      console.log(`New user registered: ${user.email}`)
+
+      return NextResponse.json(
+        {
+          message: "Account created successfully",
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            createdAt: user.createdAt,
+            preferences: user.preferences,
+          },
+        },
+        { status: 201 },
+      )
+    } catch (error) {
+      console.error("User creation error:", error)
+
+      if (error instanceof Error && error.message === "User already exists") {
+        return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 })
+      }
+
+      return NextResponse.json(
+        {
+          error: "Failed to create user account",
+          details: error instanceof Error ? error.message : "Unknown error",
+        },
+        { status: 500 },
+      )
+    }
+  } catch (error) {
+    // Catch-all error handler to ensure we always return valid JSON
+    console.error("Signup route error:", error)
     return NextResponse.json(
       {
-        message: "Account created successfully",
-        user: { id: user.id, name: user.name, email: user.email },
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 201 },
+      { status: 500 },
     )
-  } catch (error) {
-    if (error instanceof Error && error.message === "User already exists") {
-      return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 })
-    }
-
-    console.error("Signup error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
