@@ -2,14 +2,62 @@ import { Pool } from "pg"
 import bcrypt from "bcryptjs"
 import { v4 as uuidv4 } from "uuid"
 
-// Database connection
+// Create a connection pool
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  // Disable native bindings
+  native: false,
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
 })
+
+// Test the connection
+pool.query("SELECT NOW()", (err, res) => {
+  if (err) {
+    console.error("Database connection error:", err.message)
+  } else {
+    console.log("Database connected successfully at:", res.rows[0].now)
+  }
+})
+
+// Helper function to execute queries
+export async function query(text: string, params?: any[]) {
+  try {
+    const start = Date.now()
+    const res = await pool.query(text, params)
+    const duration = Date.now() - start
+
+    if (process.env.NODE_ENV !== "production") {
+      console.log("Executed query", { text, duration, rows: res.rowCount })
+    }
+
+    return res
+  } catch (error) {
+    console.error("Database query error:", error)
+    throw error
+  }
+}
+
+// Helper function to get a client from the pool
+export async function getClient() {
+  const client = await pool.connect()
+  const originalRelease = client.release
+
+  // Override the release method
+  client.release = () => {
+    client.release = originalRelease
+    return originalRelease.apply(client)
+  }
+
+  return client
+}
+
+// Helper function to generate a UUID
+export function generateId() {
+  return uuidv4()
+}
 
 // Types
 export interface User {
@@ -335,3 +383,10 @@ setInterval(
   },
   60 * 60 * 1000,
 ) // Every hour
+
+export default {
+  query,
+  getClient,
+  generateId,
+  pool,
+}
