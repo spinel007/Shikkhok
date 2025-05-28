@@ -225,7 +225,7 @@ export default function SignupPage() {
           <div className="text-center text-sm text-gray-600">
             Already have an account?{" "}
             <Link href="/login" className="text-green-600 hover:text-green-700 font-medium">
-              লগইন করুন
+              Login
             </Link>
           </div>
         </CardContent>
