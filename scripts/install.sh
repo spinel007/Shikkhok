@@ -19,55 +19,15 @@ fi
 
 echo "✅ Node.js $(node -v) detected"
 
-# Check if PostgreSQL development libraries are installed
-if ! dpkg -l | grep -q postgresql-server-dev; then
-    echo "⚠️ PostgreSQL development libraries not found. Installing..."
-    sudo apt-get update
-    sudo apt-get install -y postgresql-server-dev-all build-essential
-    echo "✅ PostgreSQL development libraries installed"
-fi
-
 # Install dependencies
 echo "📦 Installing dependencies..."
 npm install
 
 # Check if .env.local exists
 if [ ! -f ".env.local" ]; then
-    echo "⚠️ Creating .env.local from example..."
-    if [ -f ".env.example" ]; then
-        cp .env.example .env.local
-        echo "✅ .env.local created from .env.example"
-    else
-        # Create a basic .env.local if .env.example doesn't exist
-        cat > .env.local << EOF
-# OpenAI API Key
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Assistant ID
-ASSISTANT_ID=your_assistant_id_here
-
-# Database URL (PostgreSQL)
-DATABASE_URL=postgresql://username:password@localhost:5432/shikkhok_ai
-
-# Node Environment
-NODE_ENV=development
-
-# Session Secret
-SESSION_SECRET=$(openssl rand -hex 32)
-
-# Admin emails
-ADMIN_EMAILS=admin@shikkhok-ai.com
-EOF
-        echo "✅ Basic .env.local created (no .env.example found)"
-    fi
+    echo "⚠️  Creating .env.local from example..."
+    cp .env.example .env.local
     echo "📝 Please edit .env.local with your OpenAI credentials"
-fi
-
-# Verify Next.js is installed
-if ! grep -q "\"next\":" package.json; then
-    echo "⚠️ Next.js not found in package.json. Adding Next.js..."
-    npm install next@latest react@latest react-dom@latest
-    echo "✅ Next.js installed"
 fi
 
 echo "✅ Installation complete!"
