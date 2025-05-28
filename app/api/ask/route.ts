@@ -1,6 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getSession } from "@/lib/auth"
 import { Database } from "@/lib/database"
+import OpenAI from "openai"
+
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,46 +34,49 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate AI response (mock for now)
-    let reply = ""
+    // Prepare system message based on language
+    const systemMessage =
+      language === "bn"
+        ? "আপনি শিক্ষক AI, একটি সহায়ক AI সহকারী যা বাংলা ভাষা শেখাতে সাহায্য করে। আপনি বাংলা ভাষা, ব্যাকরণ, শব্দভাণ্ডার, এবং সংস্কৃতি সম্পর্কে প্রশ্নের উত্তর দিতে পারেন। যদি ছবি দেওয়া হয়, তাহলে ছবি সম্পর্কে বাংলায় বর্ণনা করুন এবং এটি সম্পর্কে শিক্ষামূলক তথ্য প্রদান করুন।"
+        : "You are Shikkhok AI, a helpful AI assistant that helps teach the Bengali language. You can answer questions about Bengali language, grammar, vocabulary, and culture. If an image is provided, describe the image and provide educational information about it."
 
-    // Simple response generation based on language
-    if (language === "bn") {
-      if (imageUrl) {
-        reply =
-          "আমি আপনার ছবি দেখেছি। এটি সম্পর্কে আমার বিশ্লেষণ হল: এটি একটি সুন্দর ছবি। আপনি কি এই ছবি সম্পর্কে আরও কিছু জানতে চান?"
-      } else {
-        const greetings = ["হ্যালো", "নমস্কার", "হাই", "শুভেচ্ছা"]
-        if (greetings.some((g) => userMessage.toLowerCase().includes(g))) {
-          reply = "নমস্কার! আমি শিক্ষক AI, আপনার বাংলা শেখার সহায়ক। আমি কিভাবে আপনাকে সাহায্য করতে পারি?"
-        } else if (userMessage.toLowerCase().includes("তুমি কে")) {
-          reply =
-            "আমি শিক্ষক AI, একটি কৃত্রিম বুদ্ধিমত্তা যা বাংলা ভাষা শেখার জন্য তৈরি করা হয়েছে। আমি আপনাকে বাংলা শব্দ, ব্যাকরণ, এবং বাক্য গঠন শিখতে সাহায্য করতে পারি।"
-        } else {
-          reply = "আপনার প্রশ্নটি বুঝতে পেরেছি। বাংলা ভাষা শেখার জন্য আপনার আগ্রহ দেখে আমি খুশি। আমি আপনাকে এই বিষয়ে সাহায্য করতে পারি।"
-        }
-      }
+    // Prepare messages for OpenAI API
+    const messages = [{ role: "system", content: systemMessage }]
+
+    // Add user message with image if provided
+    if (imageUrl) {
+      messages.push({
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: userMessage || (language === "bn" ? "এই ছবি সম্পর্কে আমাকে বলুন" : "Tell me about this image"),
+          },
+          { type: "image_url", image_url: { url: imageUrl } },
+        ],
+      })
     } else {
-      if (imageUrl) {
-        reply =
-          "I've analyzed your image. Here's what I see: It's a nice picture. Would you like to know more about this image?"
-      } else {
-        const greetings = ["hello", "hi", "hey", "greetings"]
-        if (greetings.some((g) => userMessage.toLowerCase().includes(g))) {
-          reply = "Hello! I'm Shikkhok AI, your Bengali language learning assistant. How can I help you today?"
-        } else if (userMessage.toLowerCase().includes("who are you")) {
-          reply =
-            "I am Shikkhok AI, an artificial intelligence designed to help you learn Bengali. I can help you with Bengali vocabulary, grammar, and sentence construction."
-        } else {
-          reply =
-            "I understand your question. I'm glad to see your interest in learning Bengali. I can help you with this topic."
-        }
-      }
+      messages.push({ role: "user", content: userMessage })
     }
+
+    // Call OpenAI API with GPT-4 Vision model
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4-vision-preview", // Use GPT-4 Vision model for image analysis
+      messages: messages as any,
+      max_tokens: 1000,
+    })
+
+    const reply = completion.choices[0]?.message?.content || "Sorry, I couldn't process that request."
 
     return NextResponse.json({ reply })
   } catch (error) {
     console.error("AI API error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json(
+      {
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 },
+    )
   }
 }

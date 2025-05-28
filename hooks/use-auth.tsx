@@ -27,18 +27,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth()
   }, [])
 
+  // Improve the checkAuth function to handle errors better and add retry logic
   const checkAuth = async () => {
-    try {
-      const response = await fetch("/api/auth/me")
-      if (response.ok) {
-        const data = await response.json()
-        setUser(data.user)
+    let retries = 3
+
+    while (retries > 0) {
+      try {
+        const response = await fetch("/api/auth/me", {
+          // Add cache: 'no-store' to prevent caching issues
+          cache: "no-store",
+          credentials: "include",
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          setUser(data.user)
+          return // Success, exit the retry loop
+        } else if (response.status === 401) {
+          console.log("Not authenticated, clearing user state")
+          setUser(null)
+          return // Expected error, exit the retry loop
+        } else {
+          console.error("Auth check failed with status:", response.status)
+        }
+      } catch (error) {
+        console.error("Auth check error:", error)
       }
-    } catch (error) {
-      console.error("Auth check failed:", error)
-    } finally {
-      setLoading(false)
+
+      retries--
+      if (retries > 0) {
+        // Wait before retrying (exponential backoff)
+        await new Promise((resolve) => setTimeout(resolve, (3 - retries) * 1000))
+      }
     }
+
+    setLoading(false)
   }
 
   const login = async (email: string, password: string) => {

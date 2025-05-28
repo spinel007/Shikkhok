@@ -4,9 +4,9 @@ import { MessageSquare, Brain, ArrowRight, CheckCircle, Sparkles, Users, Trendin
 import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 
-export default function LandingPage() {
+export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <>
       <Navbar />
 
       {/* Hero Section */}
@@ -318,9 +318,7 @@ export default function LandingPage() {
                 <Brain className="h-6 w-6 text-blue-400" />
                 <span className="text-xl font-bold">Shikkhok AI</span>
               </div>
-              <p className="text-gray-400">
-                Your advanced AI learning companion for NCTB curriculum (Classes 1-12) in Bengali language
-              </p>
+              <p className="text-gray-400">Advanced AI learning companion for students</p>
             </div>
 
             <div>
@@ -371,6 +369,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-    </div>
+    </>
   )
 }

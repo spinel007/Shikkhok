@@ -6,13 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { BookOpen, ArrowLeft, MessageSquare, Camera, Save } from "lucide-react"
+import { BookOpen, ArrowLeft, MessageSquare, Camera, Save, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
+import { useToast } from "@/components/ui/use-toast"
 
 export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(false)
+  const [isSaved, setIsSaved] = useState(false)
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
@@ -22,6 +24,7 @@ export default function SettingsPage() {
   })
   const { user, loading } = useAuth()
   const router = useRouter()
+  const { toast } = useToast()
 
   useEffect(() => {
     if (!loading && !user) {
@@ -32,20 +35,58 @@ export default function SettingsPage() {
   useEffect(() => {
     if (user) {
       setProfileData({
-        name: user.name,
-        email: user.email,
-        phone: "",
-        location: "",
-        bio: "",
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        location: user.location || "",
+        bio: user.bio || "",
       })
     }
   }, [user])
 
   const handleSave = async () => {
     setIsLoading(true)
-    setTimeout(() => {
+    setIsSaved(false)
+
+    try {
+      const response = await fetch("/api/user/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: profileData.name,
+          phone: profileData.phone,
+          location: profileData.location,
+          bio: profileData.bio,
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || "Failed to update profile")
+      }
+
+      const data = await response.json()
+
+      setIsSaved(true)
+      toast({
+        title: "Success",
+        description: "Your profile has been updated successfully.",
+      })
+
+      // Reset the saved state after 3 seconds
+      setTimeout(() => setIsSaved(false), 3000)
+    } catch (error) {
+      console.error("Save error:", error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to update profile",
+        variant: "destructive",
+      })
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   if (loading) {
@@ -102,7 +143,7 @@ export default function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Profile Information</CardTitle>
-            <CardDescription>Update your personal details and profile picture</CardDescription>
+            <CardDescription>Update your personal details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center gap-6">
@@ -138,16 +179,13 @@ export default function SettingsPage() {
                     id="name"
                     value={profileData.name}
                     onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                    placeholder="Enter your full name"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={profileData.email}
-                    onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                  />
+                  <Input id="email" type="email" value={profileData.email} disabled className="bg-gray-50" />
+                  <p className="text-xs text-gray-500">Email cannot be changed</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number</Label>
@@ -181,11 +219,20 @@ export default function SettingsPage() {
                 />
               </div>
 
-              <Button onClick={handleSave} disabled={isLoading} className="bg-green-600 hover:bg-green-700 mt-6">
+              <Button
+                onClick={handleSave}
+                disabled={isLoading}
+                className={`mt-6 ${isSaved ? "bg-green-600 hover:bg-green-700" : "bg-green-600 hover:bg-green-700"}`}
+              >
                 {isLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                     Saving...
+                  </>
+                ) : isSaved ? (
+                  <>
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Saved Successfully
                   </>
                 ) : (
                   <>
@@ -207,11 +254,17 @@ export default function SettingsPage() {
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b">
                 <span className="text-sm font-medium">User ID</span>
-                <span className="text-sm text-gray-600">{user.id}</span>
+                <span className="text-sm text-gray-600 font-mono">{user.id}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b">
                 <span className="text-sm font-medium">Member Since</span>
-                <span className="text-sm text-gray-600">{new Date().toLocaleDateString()}</span>
+                <span className="text-sm text-gray-600">
+                  {new Date(user.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b">
                 <span className="text-sm font-medium">Account Type</span>
