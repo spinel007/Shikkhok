@@ -34,10 +34,6 @@ yarn-error.log*
 *.db
 *.sqlite
 
-# PM2
-ecosystem.config.js
-
 # Backups
-/backups/
 *.sql
 *.tar.gz
